@@ -1,10 +1,10 @@
-字符串简介
+# 字符串简介
 
 String 内置类型，不可理性，要更改的话考虑转StringBuffer,StringBuilder，char[]之类
 
 对java来说，一个char的范围 [0,65535]，16位
 
-面试题总体分析
+# 面试题总体分析
 - 和数组相关，内容广泛
 	- 概念理解：字典序，哪个排在字典前面，哪个字典序就小
 	- 简单操作： 插入、删除字符，旋转
@@ -17,7 +17,7 @@ String 内置类型，不可理性，要更改的话考虑转StringBuffer,String
 	- 搜索(单词变换、排列组合)
 
 
-例1 把一个0-1串进行排序，可以交换任意两个位置，问最少交换的次数
+## 例1 把一个0-1串进行排序，可以交换任意两个位置，问最少交换的次数
 思路：快排partition 最左边0和最右边的1都可以不管
 ```
     public int exchangeTimes(String s){
@@ -31,7 +31,7 @@ String 内置类型，不可理性，要更改的话考虑转StringBuffer,String
     }
 ```
 
-例2 删除一个字符串所有的a,并且复制所有的b.注:字符数组足够大
+## 例2 删除一个字符串所有的a,并且复制所有的b.注:字符数组足够大
 ```
     public void solve(char[] chars){
         //先删除a,可以利用原来字符串的空间,过程类似插入排序
@@ -56,7 +56,7 @@ String 内置类型，不可理性，要更改的话考虑转StringBuffer,String
         }
     }
 ```
-思考题:如何把字符串的空格变成"%20"
+## 思考题:如何把字符串的空格变成"%20"
 ```
     public void replaceSpace(char[] chars){
         int length = 0;
@@ -73,18 +73,16 @@ String 内置类型，不可理性，要更改的话考虑转StringBuffer,String
         for(int i = newLength - 1, j = length; j >= 0; j--){
             if(chars[j] == ' '){
                 char[i] = '0';
-                char[i - 1] = '2';
-                char[i - 2] = '%';
-                i = i - 3; 
+                char[--i] = '2';
+                char[--i] = '%'; 
             }else{
-                char[i] = char[j];
-                i = i -1;
+                char[i--] = char[j];
             }
         }
     }
 ```
 
-例3 一个字符串只包含*和数字，请把它的*号都放开头。
+## 例3 一个字符串只包含*和数字，请把它的*号都放开头。
 方法1 快排partition,因为过程不稳定,所以数字相对顺序会变化
 ```
     public void sortStar(char[] chars){
@@ -116,7 +114,88 @@ String 内置类型，不可理性，要更改的话考虑转StringBuffer,String
         }
     }
 ```
-    注意:以上两种解法的异同,方法1,用到交换和快排partition思想,但是无法保证数字的顺序;方法2,使用倒着向前处理的思想,如果必须用交换,只能采用方法1
+    
+注意:以上两种解法的异同,方法1,用到交换和快排partition思想,但是无法保证数字的顺序;方法2,使用倒着向前处理的思想,如果必须用交换,只能采用方法1
+
+## 例4 单词翻转
+    
+    翻转句子中全部的单词，单词内容不变，例如I'm a student. 变为student. a I'm
+    思路：in-place翻转 字符串第i位到第j位
+    ```
+        while(i < j) swap(s[i++], s[j--]);
+    ```
+    1. 翻转整个句子：.tneduts a m'I
+    2. 每个单词单独翻转: students. a I'm
+
+    ```
+        public void revertStr(char[] chars){
+        int length = chars.length;
+        //翻转整个句子
+        revertInPlace(chars, 0, length - 1);
+        //翻转每个单词
+        String str = new String(chars);
+        String[] strs = str.split(" ");
+        int wordCounts = strs.length;
+        int[] eachLength = new int[wordCounts];
+        int i = 0;
+        for(String s : strs){
+            eachLength[i++] = s.length();
+        }
+        int start = 0;
+        for(int j = 0; j < wordCounts; j++){
+            revertInPlace(chars, start, start + eachLength[j] - 1);
+            start += eachLength[j] + 1;
+        }
+    }
+    private void revertInPlace(char[] chars, int i, int j){
+        while(i < j){
+            swap(chars, i++, j--);
+        }
+    }
+    private void swap(char[] chars, int i, int j){
+        char temp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = temp;
+    }
+    ```
+
+## 思考题：字符串循环移位
+    abcd 移动1次为bcda,移动两次为cdab,移动三次为dabc
+    结论：长度为n，移动m次，相当于移动m%n次
+        - 前m%n位翻转，后n-m%n位翻转
+        - 总体再翻转一次
+
+    ```
+    public void circularMove(char[] chars, int m){
+        int n = chars.length;
+        revertInPlace(chars, 0, m % n - 1);
+        revertInPlace(chars, m % n, n - 1);
+        revertInPlace(chars, 0, n - 1);
+    }
+    private void revertInPlace(char[] chars, int i, int j){
+        while(i < j){
+            swap(chars, i++, j--);
+        }
+    }
+    private void swap(char[] chars, int i, int j){
+        char temp = chars[i];
+        chars[i] = chars[j];
+        chars[j] = temp;
+    }
+    ```
+# 总结：
+- in-place(原地)理解
+    + 本身为O(1)空间
+    + 递归，堆栈空间可以不考虑
+- 原地相关的问题
+    + 字符串循环左移、右移
+    + 快排partition相关
+- 滑动窗口
+    + 能达到O(n)的时间复杂度
+    + O(1)的空间复杂度
+- 规则相关---细致
+- 匹配(暴力):KMP比较少见
+- Manacher----要求比较高的笔试
 
 
 
