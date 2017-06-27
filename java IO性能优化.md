@@ -24,10 +24,12 @@ Java语言采取两种截然不同的磁盘文件结构。一个是基于字节�
 
 ## 使用缓存减少读写次数开销
 使用缓冲加速文件读取的示例：
->　对于一个1 MB的输入文件，以秒为单位的执行时间是:
- FileInputStream的read方法，每次读取一个字节，不用缓冲             6.9秒
- BufferedInputStream的read方法使用BufferedInputStream              0.9秒
- FileInputStream的read方法读取数据到直接缓冲                       0.4秒
+|　对于一个1 MB的输入文件，以秒为单位的执行时间是: | |
+| -------- | ----- |
+| FileInputStream的read方法，每次读取一个字节，不用缓冲| 6.9秒 |
+| BufferedInputStream的read方法使用BufferedInputStream | 0.9秒 |
+| FileInputStream的read方法读取数据到直接缓冲 | 0.4秒 |
+
 或者说在最慢的方法和最快的方法间是17比1的不同。
 
 这个巨大的加速并不能证明你应该总是使用第三种方法，即自己做缓冲。这可能是一个错误的倾向特别是在处理文件结束事件时没有仔细的实现。在可读性上它也没有其它方法好。但是记住时间花费在哪儿了以及在必要的时候如何矫正是很有用。方法2 或许是对于大多应用的 "正确" 方法.
@@ -167,34 +169,23 @@ import java.io.*;
 这个方法很方便，在这里文件被当作一个字节数组。但是有一个明显得问题是有可能没有读取一个巨大的文件的足够的内存。
 缓冲的另一个方面是向窗口终端的文本输出。缺省情况下， System.out ( 一个PrintStream) 是行缓冲的，这意味着在遇到一个新行符后输出缓冲区被提交。
 
-##　格式化的代价
+## 格式化的代价
 
-实际上向文件写数据只是输出代价的一部分。另一个可观的代价是数据格式化。
+实际上向文件写数据只是输出代价的一部分。另一个可观的代价是**数据格式化**。
 考虑下面的字符输出程序
 性能对比结果为：这些程序产生同样的输出。运行时间是:
->格式化方法
-示例语句
-运行时间
-简单的输出一个固定字符
-System.out.print(s);
-1.3秒
-使用简单格式"+"
-String s = 字符+字符，       
-System.out.print(s);
-
-1.8秒
-使用java.text包中的 MessageFormat 类的对象方法
-String s = fmt.format(values);
-System.out.print(s);
-7.8秒
-使用java.text包中的 MessageFormat 类的静态方法
-
-7.8*1.3秒
+| 格式化方法 | 示例语句 | 运行时间 |
+| -------- | ------- | ------- |
+| 简单的输出一个固定字符 |  System.out.print(s); | 1.3秒 |
+| 使用简单格式"+" | String s = 字符+字符, System.out.print(s); | 1.8秒 |
+| 使用java.text包中的 MessageFormat 类的对象方法 | String s = fmt.format(values); System.out.print(s); | 7.8秒 |
+| 使用java.text包中的 MessageFormat 类的静态方法 | |7.8*1.3秒 |
 
 最慢的和最快的大约是6比1。如果格式没有预编译第三种方法将更慢，使用静态的方法代替:
 第三个方法比前两种方法慢很多的事实并不意味着你不应该使用它，而是你要意识到时间上的开销。
 在国际化的情况下信息格式化是很重要的，关心这个问题的应用程序通常从一个绑定的资源中读取格式然后使用它。
-方法 1，简单的输出一个固定的字符串，了解固有的I/O开销:
+### 方法 1，简单的输出一个固定的字符串，了解固有的I/O开销:
+```
 public class format1 {
     public static void main(String args[]) {
       final int COUNT = 25000;
@@ -203,8 +194,10 @@ public class format1 {
         System.out.print(s);
       }
     }
-  }
-方法2，使用简单格式"+":
+}
+```
+### 方法2，使用简单格式"+":
+```
 public class format2 {
     public static void main(String args[]) {
       int n = 5;
@@ -215,8 +208,11 @@ public class format2 {
         System.out.print(s);
       }
     }
-  }
-方法 3，第三种方法使用java.text包中的 MessageFormat 类的对象方法:
+}
+```
+
+### 方法 3，第三种方法使用java.text包中的 MessageFormat 类的对象方法:
+```
 import java.text.*;
  public class format3 {
    public static void main(String args[]) {
@@ -232,8 +228,10 @@ import java.text.*;
       System.out.print(s);
      }
     }
-  }
-方法 4，使用MessageFormat.format(String, Object[]) 类的静态方法
+}
+```
+### 方法 4，使用MessageFormat.format(String, Object[]) 类的静态方法
+```
 import java.text.*;
   public class format4 {
     public static void main(String args[]) {
@@ -250,13 +248,15 @@ import java.text.*;
       }
     }
   }
+  ```
 这比前一个例子多花费1/3的时间。
-随机访问的性能开销
-RandomAccessFile 是一个进行随机文件I/O(在字节层次上)的类。这个类提供一个seek方法，和 C/C++中的相似,移动文件指针到任意的位置，然后从那个位置字节可以被读取或写入。
+## 随机访问的性能开销
+RandomAccessFile 是一个进行随机文件I/O(在字节层次上)的类。这个类提供一个seek方法，和 C/C++ 中的相似,移动文件指针到任意的位置，然后从那个位置字节可以被读取或写入。
 seek方法访问底层的运行时系统因此往往是消耗巨大的。一个更好的代替是在RandomAccessFile上建立你自己的缓冲，并实现一个直接的字节read方法。read方法的参数是字节偏移量（>= 0）。这样的一个例子是:
 这个程序简单的读取字节序列然后输出它们。
 适用的情况：如果有访问位置，这个技术是很有用的，文件中的附近字节几乎在同时被读取。例如，如果你在一个排序的文件上实现二分法查找，这个方法可能很有用。
 不适用的情况：如果你在一个巨大的文件上的任意点做随机访问的话就没有太大价值。
+```
 import java.io.*;
   public class ReadRandom {
     private static final int DEFAULT_BUFSIZE = 4096;
@@ -318,7 +318,9 @@ import java.io.*;
       }
     }
   }
-压缩的性能开销
+```
+
+## 压缩的性能开销
 Java提供用于压缩和解压字节流的类，这些类包含在java.util.zip 包里面，这些类也作为 Jar 文件的服务基础 ( Jar 文件是带有附加文件列表的 Zip 文件)。
 压缩的目的是减少存储空间，同时被压缩的文件在IO速度不变的情况下会减少传输时间。
 压缩时候要消耗CPU时间，占用内存。
@@ -328,6 +330,7 @@ IO传输时间=数据容量/ IO速度。
 压缩是提高还是损害I/O性能很大程度依赖你的硬件配置，特别是和处理器和磁盘驱动器的速度相关。使用Zip技术的压缩通常意味着在数据大小上减少50%，但是代价是压缩和解压的时间。一个巨大(5到10 MB)的压缩文本文件，使用带有IDE硬盘驱动器的300-MHz Pentium PC从硬盘上读取可以比不压缩少用大约1/3的时间。
 压缩的一个有用的范例是向非常慢的媒介例如软盘写数据。使用高速处理器(300 MHz Pentium)和低速软驱(PC上的普通软驱)的一个测试显示压缩一个巨大的文本文件然后在写入软盘比直接写入软盘快大约50% 。
 下面的程序接收一个输入文件并将之写入一个只有一项的压缩的 Zip 文件:
+```
 import java.io.*;
  import java.util.zip.*;
   public class compress {
@@ -376,7 +379,9 @@ import java.io.*;
       doit(args[0], args[1]);
     }
   }
+```
 下一个程序执行相反的过程，将一个假设只有一项的Zip文件作为输入然后将之解压到输出文件:
+```
 import java.io.*;
  import java.util.zip.*;
   public class uncompress {
@@ -424,9 +429,10 @@ import java.io.*;
       doit(args[0], args[1]);
     }
   }
-
-高速缓存
+```
+## 高速缓存
 关于硬件的高速缓存的详细讨论超出了本文的讨论范围。但是在有些情况下软件高速缓存能被用于加速I/O。考虑从一个文本文件里面以随机顺序读取一行的情况，这样做的一个方法是读取所有的行，然后把它们存入一个ArrayList (一个类似Vector的集合类):
+```
 import java.io.*;
  import java.util.ArrayList;
   public class LineCache {
@@ -461,9 +467,11 @@ import java.io.*;
       }
     }
   }
+  ```
 getLine 方法被用来获取任意行。这个技术是很有用的，但是很明显对一个大文件使用了太多的内存，因此有局限性。一个代替的方法是简单的记住被请求的行最近的100 行，其它的请求直接从磁盘读取。这个安排在局域性的访问时很有用，但是在真正的随机访问时没有太大作用?
 分解
 分解 是指将字节或字符序列分割为像单词这样的逻辑块的过程。Java 提供StreamTokenizer 类, 像下面这样操作:
+```
 import java.io.*;
   public class token1 {
     public static void main(String args[]) {
@@ -490,7 +498,9 @@ import java.io.*;
       }
     }
   }
+  ```
 这个例子分解小写单词 (字母a-z)。如果你自己实现同等地功能，它可能像这样：
+```
 import java.io.*;
   public class token2 {
     public static void main(String args[]) {
@@ -533,10 +543,12 @@ import java.io.*;
       }
     }
   }
+  ```
 第二个程序比前一个运行快大约 20%，代价是写一些微妙的底层代码。
 StreamTokenizer 是一种混合类，它从字符流(例如 BufferedReader)读取, 但是同时以字节的形式操作，将所有的字符当作双字节(大于 0xff) ，即使它们是字母字符。
-串行化
+## 串行化
 串行化 以标准格式将任意的Java数据结构转换为字节流。例如，下面的程序输出随机整数数组:
+```
   import java.io.*;
   import java.util.*;
   public class serial1 {
@@ -558,8 +570,9 @@ StreamTokenizer 是一种混合类，它从字符流(例如 BufferedReader)读�
       }
     }
   }
-
+```
 而下面的程序读回数组:
+```
 import java.io.*;
  import java.util.*;
   public class serial2 {
@@ -577,10 +590,12 @@ import java.io.*;
       }
     }
   }
+  ```
 注意我们使用缓冲提高I/O操作的速度。
 有比串行化更快的输出大量数据然后读回的方法吗？可能没有，除非在特殊的情况下。例如，假设你决定将文本输出为64位的整数而不是一组8字节。作为文本的 长整数的最大长度是大约20个字符，或者说二进制表示的2.5倍长。这种格式看起来不会快。然而，在某些情况下，例如位图，一个特殊的格式可能是一个改 进。然而使用你自己的方案而不是串行化的标准方案将使你卷入一些权衡。
 除了串行化实际的I/O和格式化开销外(使用DataInputStream和 DataOutputStream), 还有其他的开销，例如在串行化恢复时的创建新对象的需要。
 注意DataOutputStream 方法也可以用于开发半自定义数据格式，例如:
+```
 import java.io.*;
   import java.util.*;
   public class binary1 {
@@ -604,8 +619,9 @@ import java.io.*;
       }
     }
   }
-
+```
 和:
+```
  import java.io.*;
   public class binary2 {
     public static void main(String args[]) {
@@ -625,4 +641,5 @@ import java.io.*;
       }
     }
   }
+  ```
 这些程序将10个整数写入文件然后读回它们
