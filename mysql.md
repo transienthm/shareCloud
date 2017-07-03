@@ -28,7 +28,7 @@
 |　MYSQL数据类型 | 含义 |  
 | -------- | ------- |
 | char(n) | 固定长度，最多255个字符 |
-|varchar(n) | 固定长度，最多65535个字符 |
+|varchar(n) | 可变长度，最多65535个字符 |
 | tinytext | 可变长度，最多255个字符 |
 | text | 可变长度，最多65535个字符 |
 | mediumtext | 可变长度，最多2的24次方-1个字符 |
@@ -116,3 +116,34 @@ DEFAULT
 2. SET NULL:从父表删除或更新行，并设置子表中的外键列为NULL。如果使用该选项，必须保证子表没有指定NOT NULL
 3. RESTRICT:拒绝对父表的删除或更新操作。
 4. NO ACTION:标准SQL的关键字，在MySQL中与RESTRICT相同。
+
+## 修改数据表
+
+### 添加单列
+ALTER TABLE tbl_name ADD [COLUMN] col_name column_definition [FIRST | AFTER col_name]
+
+### 添加多列
+ALTER TABLE tbl_name ADD [COLUMN] (col_name column_definition,.....)
+
+### 删除列
+ALTER TABLE tbl_name DROP [COLUMN] col_name
+
+### 添加、删除主键
+ALTER TABLE tbl_name ADD [CONSTRAINT [symbol]] PRIMARY KEY [index_type] (index_col_name,......)
+ALTER TABLE tbl_name DROP PRIMARY KEY;
+
+### 添加唯一约束
+ALTER TABLE tbl_name ADD [CONSTRAINT [symbol]] UNIQUE [INDEX|KEY] [index_name] [index_type] (index_col_name,....)
+
+### 添加外键约束
+ALTER TABLE tbl_name ADD [CONSTRAINT [symbol]] FOREIGN KEY  [index_name] (index_col_name,....) reference_definition
+
+ALTER TABLE tbl_name DROP FOREIGN KEY 外键;
+
+### 修改列定义
+ALTER TABLE table_name MODIFY [COLUMN] col_name column_definition [FIRST|AFTER col_name]
+### 修改列名称
+ALTER TABLE table_name CHANGE [COLUMN] old_col_name new_col_name column_definition [FIRST|AFTER col_name]
+### 数据表更名
+1、ALTER TABLE table_name RENAME [TO|AS] new_tbl_name
+2、RENAME TABLE table_name TO new_tbl_name [,tbl_name2 TO new_tbl_name2] ...
