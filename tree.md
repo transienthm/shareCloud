@@ -60,8 +60,8 @@
     }
 
     ```
-
-    - 中序遍历，递归法
+### 中序遍历
+- 中序遍历，递归法
     ```
     public static void inorderTraversalRec(TreeNode root) {
         if(null == root){
@@ -76,7 +76,7 @@
 
     ```
 
-    - 中序遍历，迭代法
+- 中序遍历，迭代法
     ```
     public static void inorderTraversal(TreeNode root) {
         if(null == root){
@@ -103,7 +103,8 @@
 
     }
     ```
-    - 后序遍历，递归法
+### 后序遍历
+- 后序遍历，递归法
     ```
     public static void postorderTraversalRec(TreeNode root) {
         if(null == root){
@@ -115,7 +116,7 @@
         System.out.print(root.val + " ");
     }
     ```
-    - 后序遍历，迭代法
+- 后序遍历，迭代法
     ```
     public static void postorderTraversal(TreeNode root){
         if(null == root){
@@ -169,7 +170,7 @@
     }
     ```
 
-#### 求二叉树结点的个数
+## 求二叉树结点的个数
 - 递归解法 时间复杂度O(n)
     ```
     public static int getNodeNumRec(TreeNode root){
@@ -211,7 +212,7 @@
     }
     ```
 
-#### 求二叉树的深度（高度）
+## 求二叉树的深度（高度）
 - 递归解法 时间复杂度O(n)
     ```
     public static int getDepthRec(TreeNode root) {
@@ -264,7 +265,7 @@
     }
     ```
 
-#### 求二叉树第K层的节点个数
+## 求二叉树第K层的节点个数
 - 递归解法
     思路：求以root为根的k层节点数目 等价于 求以root左孩子为根的k-1层（因为少了root那一层）节点数目 加上 以root右孩子为根的k-1层（因为少了root那一层）节点数目
     ```
@@ -321,7 +322,7 @@
         return curLevelNodes;
     }
     ```
-#### 求二叉树中叶子节点的个数
+## 求二叉树中叶子节点的个数
 - 迭代法
     ```
     public static int getNodeNumLeaf(TreeNode root) {
@@ -353,8 +354,8 @@
     }
     ```
 
-#### 两个二叉树之间的关系
-##### 判断两棵二叉树是否相同的树。
+## 两个二叉树之间的关系
+### 判断两棵二叉树是否相同的树。
 - 递归法
 	```
     public static boolean isSameRec(TreeNode r1, TreeNode r2) {
@@ -413,7 +414,7 @@
  	}
 	```
 
-#### 判断二叉树是不是平衡二叉树
+## 判断二叉树是不是平衡二叉树
 - 递归解法
 	思路：
 	(1）如果二叉树为空，返回真
@@ -431,8 +432,8 @@
      	return isAVLRec(root.left) && isAVLRec(root.right);
      }
      ```
-#### 树的镜像
-##### 判断两个树是否互相镜像
+## 树的镜像
+### 判断两个树是否互相镜像
  	```
     public static boolean isMirrorRec(TreeNode r1, TreeNode r2){
     	if(r1 == null && r2 == null){
@@ -450,7 +451,7 @@
     	return isMirrorRec(r1.left, r2.right) && isMirrorRec(r1.right, r2.left);
     }
  	```
-##### 求树的镜像
+### 求树的镜像
 - 递归解法
 	 （1）如果二叉树为空，返回空
      （2）如果二叉树不为空，求左子树和右子树的镜像，然后交换左子树和右子树
@@ -546,7 +547,7 @@
         return newRoot;
     }
     ```
-##### 求二叉树中两个节点的最低公共祖先节点
+## 求二叉树中两个节点的最低公共祖先节点
 - 递归法
 思路：1. 如果其中一个结点为根结点，则返回根结点
      2. 如果一个左子树找到，一个在右子树找到，则说明root是唯一可能的最低公共祖先
@@ -635,52 +636,6 @@
     }
     ```
 
-    由中序、后序构建树
-```
-    public TreeNode buildTree(int[] inorder, int[] postorder) {
-        if(inorder.length == 0 || postorder.length == 0){
-            return null;
-        }
 
-        int len = postorder.length;
-        TreeNode root = new TreeNode(postorder[len - 1]);
-
-        int inorderPos = 0;
-
-        for(; inorderPos < len; inorderPos++){
-            if(inorder[inorderPos] == root.val){
-                break;
-            }
-        }
-
-        int leftLength = inorderPos;
-        int rightLength = len - inorderPos - 1;
-
-        int[] leftInorder = new int[leftLength];
-        int[] leftPost = new int[leftLength];
-
-        int[] rightInorder = new int[rightLength];
-        int[] rightPost = new int[rightLength];
-
-        for(int i = 0; i < leftLength; i++){
-            leftInorder[i] = inorder[i];
-            leftPost[i] = postorder[i];
-        }
-
-        for(int i = 0; i < rightLength; i++){
-            rightInorder[i] = inorder[inorderPos + 1 + i];
-            rightPost[i] = postorder[leftLength + i];
-        }
-
-        TreeNode left = buildTree(leftInorder, leftPost);
-        TreeNode right = buildTree(rightInorder, rightPost);
-
-        root.left = left;
-        root.right = right;
-
-        return root;
-
-    }
-```
 
 > 本章参考http://blog.csdn.net/fightforyourdream/article/details/16843303
