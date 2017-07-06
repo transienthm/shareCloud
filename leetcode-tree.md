@@ -106,3 +106,364 @@ public TreeNode buildTree(int[] inorder, int[] postorder) {
 ```
 
 ##　leetcode 124
+  思路：
+  分治：对于每一个结点来说，需要计算，当前值＋左结点＋右结点 与 最大值的比较，同时，左结点与右结点的值通过递归得到，因此，递归的返回值应是一条路径的和
+```
+public class Solution{
+  int maxNum = Integer.MIN_VALUE;
+  public int maxPathSum(TreeNode root){
+
+      if(root == null){
+        return 0;
+      }
+      count(root);
+      return maxNum;
+  }
+
+  public int count(TreeNode root){
+    int lval = Integer.MIN_VALUE, rval = Integer.MIN_VALUE;
+    int val = root.val;
+
+    if(root.left != null){
+      lval = count(root.left);
+    }
+
+    if(root.right != null){
+      rval = count(root.right);
+    }
+
+    val = val + Math.max(lval, 0) + Math.max(rval, 0);
+
+    if(val > maxNum){
+      maxNum = val;
+    }
+
+    return root.val + Math.max(Math.max(lval, rval), 0);
+  }  
+}
+```
+
+## 最小深度与最大深度
+### 最小深度
+- 递归法：
+思路：
+  退出条件
+  1. root == null,直接返回0，但是！如果root.left或root.right其中一个为null，不能退出递归，两种解决方法
+    方法一：使用新的递归函数规避
+    ```
+    public int minDepth(TreeNode root){
+      if(root == null){
+        return 0;
+      }
+      return getMin(root);
+    }
+    public int getMin(TreeNode root){
+      //规避左右子树某一个为null
+      if(root == null){
+        return Integer.MAX_VALUE;//排除此条路径
+      }
+
+      if(root.left == null && root.right == null){
+        return 1;
+      }
+      int left = Integer.MAX_VALUE;
+      int right = Integer.MAX_VALUE;
+
+      if(root.left != null){
+        left = getMin(root.left);
+      }
+      if(root.right != null){
+        right = getMin(root.right);
+      }
+
+      return Math.min(left, right) + 1;
+    }
+    ```
+    方法二：给当前方法打补丁
+    ```
+    public int minDepth(TreeNode root) {
+          if(root == null){
+            return 0;
+          }
+
+          if(root.left == null && root.right == null){
+            return 1;
+          }
+
+          if(root.left == null){
+              return minDepth(root.right) + 1;
+          }else if(root.right == null){
+              return minDepth(root.left) + 1;
+          }else{
+              return Math.min(minDepth(root.left), minDepth(root.right)) + 1;
+          }
+    }  
+    ```
+  2. root.left == null && root.right == null 说明为叶子结点，返回1
+  3. 当前层数加 左右子树的最小深度
+- 迭代法
+思路：层级遍历，一旦在当前层发现叶子结点，返回层数
+```
+  public int minDepth(TreeNode root){
+    if(root == null){
+      return 0;
+    }
+    if(root.left == null && root.right == null){
+      return 1;
+    }
+
+    int depth = 0;
+    int curLevelNodes = 1;
+    int nextLevelNodes = 0;
+    Queue<TreeNode> queue = new LinkedList<>();
+    queue.add(root);
+
+    while(!queue.isEmpty()){
+      TreeNode cur = queue.poll();
+      curLevelNodes--;
+
+      if(cur.left == null && cur.right == null){
+        return depth + 1;
+      }
+
+      if(cur.left != null){
+        queue.add(cur.left);
+        nextLevelNodes++;
+      }
+
+      if(cur.right != null){
+        queue.add(cur.right);
+        nextLevelNodes++;
+      }
+
+      if(curLevelNodes == 0){
+        depth++;
+        curLevelNodes = nextLevelNodes;
+        nextLevelNodes = 0;
+      }
+    }
+
+    return depth;
+  }
+```
+
+### 最大深度
+- 递归法
+思路：递归时逻辑是一贯的
+```
+  public int getMaxDepth(TreeNode root){
+    if(root == null){
+      return 0;
+    }
+
+    return Math.max(getMaxDepth(root.left), getMaxDepth(root.right)) + 1;
+  }
+```
+- 迭代法
+思路：层级遍历求最大深度
+
+```
+  public int maxDepth(TreeNode root){
+    if(root == null){
+      return 0;
+    }
+    if(root.left == null && root.right == null){
+      return 1;
+    }
+
+    int depth = 0;
+    int curLevelNodes = 1;
+    int nextLevelNodes = 0;
+    Queue<TreeNode> queue = new LinkedList<>();
+    queue.add(root);
+
+    while(!queue.isEmpty()){
+      TreeNode cur = queue.poll();
+      curLevelNodes--;
+
+      if(cur.left != null){
+        queue.add(cur.left);
+        nextLevelNodes++;
+      }
+
+      if(cur.right != null){
+        queue.add(cur.right);
+        nextLevelNodes++;
+      }
+
+      if(curLevelNodes == 0){
+        depth++;
+        curLevelNodes = nextLevelNodes;
+        nextLevelNodes = 0;
+      }
+    }
+
+    return depth;
+  }
+```
+
+## 树是否平衡
+树平衡要求对所有结点来说，其左右子树的深度差不超过1
+```
+public boolean isBalanced(TreeNode root){
+  if(root == null){
+    return true;
+  }
+
+  int leftDepth = getMaxDepth(root.left);
+  int rightDepth = getMaxDepth(root.right);
+
+  if(Math.abs(leftDepth - rightDepth) > 1){
+    return false;
+  }
+
+  return isBalanced(root.left) && isBalanced(root.right);
+}
+```
+
+## 判断两棵树是否相同
+分析：树的相同，首先结构相同，其次结点值相同
+两种判断结构是否相同的写法，逻辑一样
+方法一
+```
+  public boolean isSame(TreeNode r1, TreeNode r2){
+    if(r1 == null && r2 == null){
+      return true;
+    }
+    if(r1 == null || r2 == null){
+      return false;
+    }
+    //else 结构相同
+  }
+```
+方法二
+```
+  public boolean isSame(TreeNode r1, TreeNode r2){
+    if(r1 == null){
+      return r2 == null;
+    }
+
+    if(r2 == null){
+      return false;
+    }
+    //else 结构相同
+  }
+```
+完整逻辑
+```
+  public boolean isSame(TreeNode r1, TreeNode r2){
+    if(r1 == null){
+      return r2 == null;
+    }
+
+    if(r2 == null){
+      return false;
+    }
+
+    return r1.val == r2.val && isSame(r1.left, r2.left) && isSame(r1.right, r2.right);
+  }
+```
+
+## 判断对称
+左右子树，结构相同，对称位置值相同
+```
+public boolean isSymmetric(TreeNode root) {
+  if(root == null){
+    return true;
+  }
+  return help(root.left, root.right);
+}
+
+public boolean help(TreeNode p, TreeNode q){
+  if(p == null){
+    return q == null;
+  }
+  if(q == null){
+    return false;
+  }
+
+  return p.val == q.val && help(p.left, q.right) && help(p.right, q.left);
+}
+```
+
+## 判断二叉搜索树
+- 迭代法
+思路：中序遍历 前一个结点值小于后面的结点值
+```
+public boolean isValidBST(TreeNode root){
+  if(root == null){
+    return true;
+  }
+
+  Stack<TreeNode> stack = new Stack<>();
+  TreeNode cur = root;
+
+  TreeNode preCur = null;
+  while(true){
+    while(cur != null){
+        stack.push(cur);
+        cur = cur.left;
+      }
+
+      if(stack.isEmpty()){
+        break;
+      }
+
+      cur = stack.pop();
+
+      if(preCur != null){
+        if(preCur.val >= cur.val){
+          return false;
+        }
+      }
+      preCur = cur;
+      cur = cur.right;
+  }  
+  return true;
+}
+```
+- 递归法
+思路：同样是中序遍历
+思考 pre结点在哪赋值，赋值前如何处理
+```
+    TreeNode pre = null;
+    public boolean isValidBST(TreeNode root) {
+        if(root == null){
+          return true;
+        }
+
+        if(root.left == null && root.right == null){
+            return true;
+        }
+
+        return help(root);
+    }
+
+    public boolean help(TreeNode root){
+        if(root == null){
+            return true;
+        }
+
+        boolean left = help(root.left);
+        if(pre != null && pre.val >= root.val){
+            return false;
+        }
+        pre = root;
+        boolean right = help(root.right);
+        return left && right;
+    }
+```
+
+## 链表与树
+### 二叉树转链表 leetcode 114
+```
+  TreeNode pointer = new TreeNode(-1);
+  public void flatten(TreeNode root){
+    if(root == null){
+      return;
+    }
+
+
+  }
+
+```
