@@ -456,14 +456,59 @@ public boolean isValidBST(TreeNode root){
 
 ## 链表与树
 ### 二叉树转链表 leetcode 114
+思路：断开每一个结点，从用一个指针递归地向下指，每次都只更新右结点，递归顺序为先左子树，后右子树
 ```
   TreeNode pointer = new TreeNode(-1);
   public void flatten(TreeNode root){
     if(root == null){
       return;
     }
+    TreeNode left = root.left;
+    TreeNode right = root.right;
+    root.left = null;
+    root.right = null;
+    pointer.right = root;
+    pointer = root;
 
-
+    flatten(root.left);
+    flatten(root.right);
   }
+```
 
+### 链表转二叉树
+```
+public TreeNode sortedListToBST(ListNode head){
+       if(head == null){
+         return null;
+       }
+       if(head.next == null){
+           return new TreeNode(head.val);
+       }
+       int length = 0;
+       ListNode cur = head;
+       while(cur != null){
+         cur = cur.next;
+         length++;
+       }
+       return help(head, length);
+ }
+   public TreeNode help(ListNode head, int length){
+     if(length == 0){
+       return null;
+     }
+
+     ListNode now = head;
+     for(int i = 0; i < (length - 1) >> 1; i++){
+       now = now.next;
+     }
+     TreeNode root = new TreeNode(now.val);
+
+     TreeNode left = help(head, (length - 1) >> 1);
+     TreeNode right = help(now.next, length >> 1);
+
+     root.left = left;
+     root.right = right;
+
+     return root;
+   }
 ```
