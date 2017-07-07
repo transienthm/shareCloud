@@ -144,7 +144,7 @@ public class Solution{
 ```
 
 ## 最小深度与最大深度
-### 最小深度
+### leetcode 111 最小深度
 - 递归法：
 思路：
   退出条件
@@ -247,7 +247,7 @@ public class Solution{
   }
 ```
 
-### 最大深度
+### leetcode 104 最大深度
 - 递归法
 思路：递归时逻辑是一贯的
 ```
@@ -302,7 +302,7 @@ public class Solution{
   }
 ```
 
-## 树是否平衡
+## leetcode 110 树是否平衡
 树平衡要求对所有结点来说，其左右子树的深度差不超过1
 ```
 public boolean isBalanced(TreeNode root){
@@ -321,7 +321,7 @@ public boolean isBalanced(TreeNode root){
 }
 ```
 
-## 判断两棵树是否相同
+## leetcode 100 判断两棵树是否相同
 分析：树的相同，首先结构相同，其次结点值相同
 两种判断结构是否相同的写法，逻辑一样
 方法一
@@ -364,7 +364,7 @@ public boolean isBalanced(TreeNode root){
   }
 ```
 
-## 判断对称
+## leetcode 101 判断对称
 左右子树，结构相同，对称位置值相同
 ```
 public boolean isSymmetric(TreeNode root) {
@@ -386,7 +386,7 @@ public boolean help(TreeNode p, TreeNode q){
 }
 ```
 
-## 判断二叉搜索树
+## leetcode 98 判断二叉搜索树
 - 迭代法
 思路：中序遍历 前一个结点值小于后面的结点值
 ```
@@ -455,7 +455,7 @@ public boolean isValidBST(TreeNode root){
 ```
 
 ## 链表与树
-### 二叉树转链表 leetcode 114
+### leetcode 114 二叉树转链表
 思路：断开每一个结点，从用一个指针递归地向下指，每次都只更新右结点，递归顺序为先左子树，后右子树
 ```
   TreeNode pointer = new TreeNode(-1);
@@ -516,7 +516,7 @@ public TreeNode sortedListToBST(ListNode head){
 O(n)解法
 将链表先转成数组
 
-### 数组转平衡二叉树leetcode 108
+### leetcode 108 数组转平衡二叉树
 ```
 public TreeNode sortedArrayToBST(int[] nums) {
         if(nums.length == 0){
