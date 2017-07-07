@@ -476,6 +476,7 @@ public boolean isValidBST(TreeNode root){
 ```
 
 ### 链表转二叉树
+O(nlogn)解法
 ```
 public TreeNode sortedListToBST(ListNode head){
        if(head == null){
@@ -511,4 +512,35 @@ public TreeNode sortedListToBST(ListNode head){
 
      return root;
    }
+```
+O(n)解法
+将链表先转成数组
+
+### 数组转平衡二叉树leetcode 108
+```
+public TreeNode sortedArrayToBST(int[] nums) {
+        if(nums.length == 0){
+            return null;
+        }
+
+        if(nums.length == 1){
+            return new TreeNode(nums[0]);
+        }
+
+        int length = nums.length;
+        int now = nums[(length - 1) >> 1];
+        TreeNode root = new TreeNode(now);
+        int leftLen = (length - 1) >> 1;
+        int rightLen = length >> 1;
+
+        int[] leftArr = new int[leftLen];
+        int[] rightArr = new int[rightLen];
+        System.arraycopy(nums, 0, leftArr, 0, leftLen);
+        System.arraycopy(nums, leftLen + 1, rightArr, 0, rightLen);
+
+        root.left = sortedArrayToBST(leftArr);
+        root.right = sortedArrayToBST(rightArr);
+
+        return root;
+    }
 ```
